@@ -19,3 +19,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+package debug 
+
+import (
+    "panic"
+    "errors"
+)
+
+func Check(err error) {
+    if err != nil {
+        panic(err)
+    }
+} 
+
+func CheckN(err error, d string) {
+    if err != nil {
+        panic(d)
+    }
+}
+
