@@ -39,3 +39,6 @@ func CheckN(err error, d string) {
     }
 }
 
+func ThrowN(d string) {
+    panic(d)
+}
