@@ -22,11 +22,6 @@
 
 package util 
 
-import (
-    "panic"
-    "errors"
-)
-
 func Check(err error) {
     if err != nil {
         panic(err)
