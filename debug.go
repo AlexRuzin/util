@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package debug 
+package util 
 
 import (
     "panic"
