@@ -20,7 +20,9 @@
  * SOFTWARE.
  */
 
-package util 
+package util
+
+import "fmt"
 
 func Check(err error) {
     if err != nil {
@@ -36,4 +38,12 @@ func CheckN(err error, d string) {
 
 func ThrowN(d string) {
     panic(d)
+}
+
+func out(debug string) {
+    fmt.Println(debug)
+}
+
+func out_hex(debug []byte) {
+    fmt.Printf("%v\r\n", debug)
 }
