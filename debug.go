@@ -40,10 +40,10 @@ func ThrowN(d string) {
     panic(d)
 }
 
-func out(debug string) {
+func DebugOut(debug string) {
     fmt.Println(debug)
 }
 
-func out_hex(debug []byte) {
+func DebugOutHex(debug []byte) {
     fmt.Printf("%v\r\n", debug)
 }
