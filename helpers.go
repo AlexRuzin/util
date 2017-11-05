@@ -22,7 +22,11 @@
 
 package util
 
-import "strconv"
+import (
+    "strconv"
+    "math/rand"
+    "time"
+)
 
 func IntToString(n int) string {
     var output string
@@ -33,4 +37,9 @@ func IntToString(n int) string {
     }
 
     return output
+}
+
+func RandIntRange(min, max int) int {
+    rand.Seed(time.Now().Unix())
+    return rand.Intn(max - min) + min
 }
