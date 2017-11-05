@@ -52,11 +52,13 @@ func DebugOutHex(debug []byte) {
     fmt.Printf("%v\r\n", debug)
 }
 
-func IntToString(n int) (string, error) {
+func IntToString(n int) string {
     var output string
 
     output = strconv.FormatInt(int64(n), 10)
     if output == "" {
-        return "", errors.New("error: Invalid input to IntToString()")
+        ThrowN("Invalid input to IntToString")
     }
+
+    return output
 }
