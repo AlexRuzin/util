@@ -25,7 +25,7 @@ package util
 import (
     "fmt"
     "strconv"
-    "errors"
+    _"errors"
 )
 
 func Check(err error) {
