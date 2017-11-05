@@ -22,7 +22,11 @@
 
 package util
 
-import "fmt"
+import (
+    "fmt"
+    "strconv"
+    "errors"
+)
 
 func Check(err error) {
     if err != nil {
@@ -46,4 +50,13 @@ func DebugOut(debug string) {
 
 func DebugOutHex(debug []byte) {
     fmt.Printf("%v\r\n", debug)
+}
+
+func IntToString(n int) (string, error) {
+    var output string
+
+    output = strconv.FormatInt(int64(n), 10)
+    if output == "" {
+        return "", errors.New("error: Invalid input to IntToString()")
+    }
 }
