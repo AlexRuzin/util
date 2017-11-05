@@ -24,7 +24,7 @@ package util
 
 import (
     "fmt"
-    "strconv"
+    _"strconv"
     _"errors"
 )
 
@@ -50,15 +50,4 @@ func DebugOut(debug string) {
 
 func DebugOutHex(debug []byte) {
     fmt.Printf("%v\r\n", debug)
-}
-
-func IntToString(n int) string {
-    var output string
-
-    output = strconv.FormatInt(int64(n), 10)
-    if output == "" {
-        ThrowN("Invalid input to IntToString")
-    }
-
-    return output
 }
