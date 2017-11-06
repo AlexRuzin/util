@@ -32,7 +32,13 @@ func Check(err error) {
     if err != nil {
         panic(err)
     }
-} 
+}
+
+func CheckR(err error) error {
+    if err != nil {
+        return err
+    }
+}
 
 func CheckN(err error, d string) {
     if err != nil {
