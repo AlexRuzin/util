@@ -38,6 +38,7 @@ func CheckR(err error) error {
     if err != nil {
         return err
     }
+    return nil
 }
 
 func CheckN(err error, d string) {
