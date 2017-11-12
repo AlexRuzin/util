@@ -26,6 +26,7 @@ import (
     "strconv"
     "math/rand"
     "time"
+    "sync"
 )
 
 func IntToString(n int) string {
@@ -42,4 +43,10 @@ func IntToString(n int) string {
 func RandIntRange(min, max int) int {
     rand.Seed(time.Now().Unix())
     return rand.Intn(max - min) + min
+}
+
+func WaitForever() {
+    m := sync.Mutex{}
+    m.Lock()
+    m.Lock()
 }
