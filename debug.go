@@ -58,3 +58,7 @@ func DebugOut(debug string) {
 func DebugOutHex(debug []byte) {
     fmt.Printf("%v\r\n", debug)
 }
+
+func ThrowError(d string) error {
+    return errors.New("THROWN ERROR: " + d)
+}
