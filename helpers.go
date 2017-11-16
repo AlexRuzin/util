@@ -70,3 +70,15 @@ func RandInt(min int, max int) int {
     rand.Seed(time.Now().UTC().UnixNano())
     return min + rand.Intn(max-min)
 }
+
+func Sleep(val time.Duration) {
+    time.Sleep(val)
+}
+
+func SleepSeconds(val time.Duration) {
+    time.Sleep(val * time.Second)
+}
+
+func SleepHours(val time.Duration) {
+    time.Sleep(val * time.Hour)
+}
