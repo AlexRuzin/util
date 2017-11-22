@@ -28,6 +28,7 @@ import (
     "time"
     "sync"
     "bytes"
+    "encoding/base64"
 )
 
 func IntToString(n int) string {
@@ -81,4 +82,17 @@ func SleepSeconds(val time.Duration) {
 
 func SleepHours(val time.Duration) {
     time.Sleep(val * time.Hour)
+}
+
+func B64E(d []byte) string {
+    return base64.StdEncoding.EncodeToString(d)
+}
+
+func B64D(d string) (data []byte, err error) {
+    output, is_ok := base64.StdEncoding.DecodeString(d)
+    if is_ok != nil {
+        return nil, is_ok
+    }
+
+    return output, nil
 }
