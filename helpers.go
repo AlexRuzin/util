@@ -99,6 +99,6 @@ func B64D(d string) (data []byte, err error) {
 }
 
 func RetErrStr(text string) (err error) {
-    err = errors.New(text)
+    err = errors.New("error: " + text)
     return
 }
