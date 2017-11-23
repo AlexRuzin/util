@@ -29,7 +29,6 @@ import (
     "sync"
     "bytes"
     "encoding/base64"
-    "errors"
 )
 
 func IntToString(n int) string {
