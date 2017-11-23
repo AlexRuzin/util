@@ -59,6 +59,7 @@ func DebugOutHex(debug []byte) {
     fmt.Printf("%v\r\n", debug)
 }
 
-func ThrowError(d string) error {
-    return errors.New("THROWN ERROR: " + d)
+func RetErrStr(text string) (err error) {
+    err = errors.New("error: " + text)
+    return
 }
