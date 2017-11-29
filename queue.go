@@ -22,3 +22,18 @@
 
 package util
 
+import "sync"
+
+type Queue struct {
+    list []interface{}
+    sync sync.Mutex
+}
+
+func NewQueue() *Queue {
+    q := &Queue{}
+    return q
+}
+
+func (f *Queue) Len() int {
+    return len(f.list)
+}
