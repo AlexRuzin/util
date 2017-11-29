@@ -29,6 +29,7 @@ import (
     "sync"
     "bytes"
     "encoding/base64"
+    "unicode"
 )
 
 func IntToString(n int) string {
@@ -95,4 +96,13 @@ func B64D(d string) (data []byte, err error) {
     }
 
     return output, nil
+}
+
+func IsAsciiPrintable(s string) bool {
+    for _, r := range s {
+        if r > unicode.MaxASCII || !unicode.IsPrint(r) {
+            return false
+        }
+    }
+    return true
 }
