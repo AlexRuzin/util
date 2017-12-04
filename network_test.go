@@ -21,3 +21,14 @@
  */
 
 package util
+
+import "testing"
+
+func TestNetwork(t *testing.T) {
+    localIP, err := GetLocalIP()
+    if err != nil {
+        t.Errorf(err.Error())
+        t.FailNow()
+    }
+    DebugOut(*localIP)
+}
