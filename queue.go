@@ -22,7 +22,9 @@
 
 package util
 
-import "sync"
+import (
+    "sync"
+)
 
 type Queue struct {
     list []interface{}
@@ -35,5 +37,21 @@ func NewQueue() *Queue {
 }
 
 func (f *Queue) Len() int {
+    f.sync.Lock()
+    defer f.sync.Unlock()
+
     return len(f.list)
+}
+
+func (f *Queue) Push(item interface{}) {
+    f.sync.Lock()
+    defer f.sync.Unlock()
+
+    if len(f.list) == 0 {
+        f.list = make([]interface{}, 1)
+        f.list[0] = item
+        return
+    }
+
+    f.list[f.Len() + 1] = item
 }

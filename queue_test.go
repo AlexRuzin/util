@@ -28,5 +28,10 @@ import (
 
 func TestQueue(t *testing.T) {
     var queue = NewQueue()
+    len := queue.Len()
+    DebugOut(string(len))
 
+    queue.Push(1)
+    queue.Push(2)
+    len = queue.Len()
 }
