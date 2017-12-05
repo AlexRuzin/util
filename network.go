@@ -100,3 +100,4 @@ func GetGeoIP() (geoip *GeoIP, err error) {
 
     return parsed, nil
 }
+
