@@ -22,10 +22,81 @@
 
 package util
 
-func GetLocalIP() (localIP string, err error) {
-    return "", nil
+import (
+    "net"
+    "strconv"
+    "net/http"
+    "errors"
+    "io/ioutil"
+    "encoding/json"
+)
+
+func GetLocalIP() (localIP *string, err error) {
+    interfaces, err := net.Interfaces()
+    if err != nil {
+        return nil, err
+    }
+
+    var report = "LocalIP Information: "
+    var interface_c = 0
+    for _, i := range interfaces {
+        addresses, err := i.Addrs()
+        if err != nil {
+            report += "<Failed to get interface #" + strconv.Itoa(interface_c) + ">, "
+            continue
+        }
+
+        for _, address := range addresses {
+            var ip net.IP
+            switch v := address.(type) {
+            case *net.IPNet:
+                ip = v.IP
+                report += "[Interface " + strconv.Itoa(interface_c) + "]: [IP]" + ip.String() + ", "
+            case *net.IPAddr:
+                ip = v.IP
+                report += "[Interface " + strconv.Itoa(interface_c) + "]: [Ethernet]" + ip.String() + ", "
+            }
+        }
+
+        interface_c += 1
+    }
+
+    return &report, nil
 }
 
-func GetGlobalIP() (globalIP string, err error) {
-    return "", nil
+const GEOIP_URI = "https://ipinfo.io/json"
+type GeoIP struct {
+    IPString        string `json:"ip"`
+    Hostname        string `json:"hostname"`
+    City            string `json:"city"`
+    Region          string `json:"region"`
+    CountryCode     string `json:"country"`
+    Coordinates     string `json:"loc"`
+    ISP             string `json:"org"`
+    Postal          string `json:"postal"`
+}
+
+func GetGeoIP() (geoip *GeoIP, err error) {
+    var client http.Client
+    response, err := client.Get(GEOIP_URI)
+    if err != nil {
+        return nil, err
+    }
+    defer response.Body.Close()
+
+    if response.StatusCode != http.StatusOK {
+        return nil, errors.New("failed to obtain GEOIP JSON structure from: " + GEOIP_URI)
+    }
+
+    body, err := ioutil.ReadAll(response.Body)
+    if err != nil {
+        return nil, err
+    }
+
+    var parsed = &GeoIP{}
+    if err := json.Unmarshal(body, parsed); err != nil {
+        return nil, err
+    }
+
+    return parsed, nil
 }
