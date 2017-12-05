@@ -22,7 +22,9 @@
 
 package util
 
-import "testing"
+import (
+    "testing"
+)
 
 func TestNetwork(t *testing.T) {
     localIP, err := GetLocalIP()
@@ -30,5 +32,15 @@ func TestNetwork(t *testing.T) {
         t.Errorf(err.Error())
         t.FailNow()
     }
-    DebugOut(*localIP)
+    d := "GetLocalIP(): " + *localIP
+    DebugOut(d)
+
+    geoip, err := GetGeoIP()
+    if err != nil {
+        t.Errorf(err.Error())
+        t.FailNow()
+    }
+
+    DebugOut("GlobalIP: " + geoip.IPString)
+    return
 }
