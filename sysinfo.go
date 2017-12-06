@@ -24,6 +24,8 @@ package util
 
 import (
     "runtime"
+    "os/user"
+    "os"
 )
 
 type SystemInfo struct {
@@ -43,10 +45,29 @@ type SystemInfo struct {
 }
 
 func GetSystemInfo() (sysinfo *SystemInfo, err error) {
+    hostname, username := func () (hostname string, username string) {
+        hostname = "<unknown>"
+        username = "<unknown>"
+
+        u, err := user.Current()
+        if err == nil {
+            username = u.Username
+        }
+
+        h, err := os.Hostname()
+        if err == nil {
+            hostname = h
+        }
+
+        return
+    } ()
+
     var report = &SystemInfo{
         LocalIP: "",
         GlobalIP: nil,
         OSName: runtime.GOOS,
+        Hostname: hostname,
+        Username: username,
     }
 
     localip, err := GetLocalIP()
