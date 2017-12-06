@@ -21,3 +21,17 @@
  */
 
 package util
+
+import (
+    "testing"
+)
+
+func TestSysInfo(t *testing.T) {
+    sysinfo, err := GetSystemInfo()
+    if err != nil {
+        t.Errorf(err.Error())
+        t.FailNow()
+    }
+
+    DebugOut("Global IP: " + sysinfo.GlobalIP.IPString)
+}
