@@ -20,12 +20,23 @@
  * SOFTWARE.
  */
 
+/*
+ * Thanks to matishsiao for his code for getsysinfo.
+ *  https://github.com/matishsiao/goInfo
+ */
+
 package util
 
 import (
     "runtime"
     "os/user"
     "os"
+    "github.com/matishsiao/goInfo"
+    "strings"
+    "time"
+    "os/exec"
+    "bytes"
+    "fmt"
 )
 
 type SystemInfo struct {
@@ -42,6 +53,9 @@ type SystemInfo struct {
     /* Local host information -- should be universal */
     Hostname    string
     Username    string
+
+    /* GoInfoObject -- kernel and detailed system info */
+    GoInfo      *goInfo.GoInfoObject
 }
 
 func GetSystemInfo() (sysinfo *SystemInfo, err error) {
@@ -68,6 +82,7 @@ func GetSystemInfo() (sysinfo *SystemInfo, err error) {
         OSName: runtime.GOOS,
         Hostname: hostname,
         Username: username,
+        GoInfo: nil,
     }
 
     localip, err := GetLocalIP()
@@ -82,13 +97,117 @@ func GetSystemInfo() (sysinfo *SystemInfo, err error) {
 
     switch report.OSName {
     case "darwin":
-
+        report.GoInfo = func () *goInfo.GoInfoObject {
+            out := getInfoDarwin()
+            for strings.Index(out,"broken pipe") != -1 {
+                out = getInfoDarwin()
+                time.Sleep(500 * time.Millisecond)
+            }
+            osStr := strings.Replace(out,"\n","",-1)
+            osStr = strings.Replace(osStr,"\r\n","",-1)
+            osInfo := strings.Split(osStr," ")
+            gio := &goInfo.GoInfoObject{Kernel:osInfo[0],Core:osInfo[1],Platform:osInfo[2],OS:osInfo[0],GoOS:runtime.GOOS,CPUs:runtime.NumCPU()}
+            gio.Hostname,_ = os.Hostname()
+            return gio
+        } ()
     case "windows":
-
+        report.GoInfo = func () *goInfo.GoInfoObject {
+            cmd := exec.Command("cmd","ver")
+            cmd.Stdin = strings.NewReader("some input")
+            var out bytes.Buffer
+            var stderr bytes.Buffer
+            cmd.Stdout = &out
+            cmd.Stderr = &stderr
+            err := cmd.Run()
+            if err != nil {
+                panic(err)
+            }
+            osStr := strings.Replace(out.String(),"\n","",-1)
+            osStr = strings.Replace(osStr,"\r\n","",-1)
+            tmp1 := strings.Index(osStr,"[Version")
+            tmp2 := strings.Index(osStr,"]")
+            var ver string
+            if tmp1 == -1 || tmp2 == -1 {
+                ver = "unknown"
+            } else {
+                ver = osStr[tmp1+9:tmp2]
+            }
+            gio := &goInfo.GoInfoObject{Kernel:"windows",Core:ver,Platform:"unknown",OS:"windows",GoOS:runtime.GOOS,CPUs:runtime.NumCPU()}
+            gio.Hostname,_ = os.Hostname()
+            return gio
+        } ()
     case "linux":
-
+        report.GoInfo = func () *goInfo.GoInfoObject {
+            out := getInfoLinux()
+            for strings.Index(out,"broken pipe") != -1 {
+                out = getInfoLinux()
+                time.Sleep(500 * time.Millisecond)
+            }
+            osStr := strings.Replace(out,"\n","",-1)
+            osStr = strings.Replace(osStr,"\r\n","",-1)
+            osInfo := strings.Split(osStr," ")
+            gio := &goInfo.GoInfoObject{Kernel:osInfo[0],Core:osInfo[1],Platform:osInfo[2],OS:osInfo[3],GoOS:runtime.GOOS,CPUs:runtime.NumCPU()}
+            gio.Hostname,_ = os.Hostname()
+            return gio
+        } ()
+    case "freebsd":
+        report.GoInfo = func () *goInfo.GoInfoObject {
+            out := getInfoFreeBSD()
+            for strings.Index(out,"broken pipe") != -1 {
+                out = getInfoFreeBSD()
+                time.Sleep(500 * time.Millisecond)
+            }
+            osStr := strings.Replace(out,"\n","",-1)
+            osStr = strings.Replace(osStr,"\r\n","",-1)
+            osInfo := strings.Split(osStr," ")
+            gio := &goInfo.GoInfoObject{Kernel:osInfo[0],Core:osInfo[1],Platform:runtime.GOARCH,OS:osInfo[2],GoOS:runtime.GOOS,CPUs:runtime.NumCPU()}
+            gio.Hostname,_ = os.Hostname()
+            return gio
+        } ()
     default:
     }
 
     return nil, nil
+}
+
+func getInfoLinux() string {
+    cmd := exec.Command("uname","-srio")
+    cmd.Stdin = strings.NewReader("some input")
+    var out bytes.Buffer
+    var stderr bytes.Buffer
+    cmd.Stdout = &out
+    cmd.Stderr = &stderr
+    err := cmd.Run()
+    if err != nil {
+        fmt.Println("getInfo:",err)
+    }
+    return out.String()
+}
+
+func getInfoDarwin() string {
+    cmd := exec.Command("uname","-srm")
+    cmd.Stdin = strings.NewReader("some input")
+    var out bytes.Buffer
+    var stderr bytes.Buffer
+    cmd.Stdout = &out
+    cmd.Stderr = &stderr
+    err := cmd.Run()
+    if err != nil {
+        fmt.Println("getInfo:",err)
+    }
+    return out.String()
+}
+
+func getInfoFreeBSD() string {
+    cmd := exec.Command("uname","-sri")
+    cmd.Stdin = strings.NewReader("some input")
+    var out bytes.Buffer
+    var stderr bytes.Buffer
+    cmd.Stdout = &out
+    cmd.Stderr = &stderr
+    err := cmd.Run()
+    if err != nil {
+        fmt.Println("getInfo:",err)
+    }
+    return out.String()
 }
