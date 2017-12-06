@@ -37,6 +37,8 @@ func GetLocalIP() (localIP *string, err error) {
         return nil, err
     }
 
+    /* FIXME -- make the report in JSON */
+
     var report = "LocalIP Information: "
     var interface_c = 0
     for _, i := range interfaces {
