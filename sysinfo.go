@@ -22,3 +22,52 @@
 
 package util
 
+import (
+    "runtime"
+)
+
+type SystemInfo struct {
+    /*
+     * Interface MAC/IP addresses, GeoIP Location in a juicy serialized structure,
+     *  and global IP address as reported by "ipinfo.io"
+     */
+    GlobalIP    *GeoIP
+    LocalIP     string
+
+    /* Operating system version/build */
+    OSName      string
+
+    /* Local host information -- should be universal */
+    Hostname    string
+    Username    string
+}
+
+func GetSystemInfo() (sysinfo *SystemInfo, err error) {
+    var report = &SystemInfo{
+        LocalIP: "",
+        GlobalIP: nil,
+        OSName: runtime.GOOS,
+    }
+
+    localip, err := GetLocalIP()
+    if err == nil {
+        report.LocalIP = *localip
+    }
+
+    globalip, err := GetGeoIP()
+    if err == nil {
+        report.GlobalIP = globalip
+    }
+
+    switch report.OSName {
+    case "darwin":
+
+    case "windows":
+
+    case "linux":
+
+    default:
+    }
+
+    return nil, nil
+}
