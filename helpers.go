@@ -30,7 +30,15 @@ import (
     "bytes"
     "encoding/base64"
     "unicode"
+    "bufio"
 )
+
+func GetStdin() *string {
+   reader := bufio.NewReader(os.Stdin)
+   DebugOut("in> ")
+   data, _ := reader.ReadString('\n')
+   return &data 
+}
 
 func IntToString(n int) string {
     var output string
