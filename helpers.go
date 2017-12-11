@@ -38,7 +38,13 @@ func GetStdin() *string {
    reader := bufio.NewReader(os.Stdin)
    DebugOut("in> ")
    data, _ := reader.ReadString('\n')
-   return &data 
+
+   /* Strip '\n' character */
+   new := make([]byte, len(data) - 1)
+   copy(new, data)
+   output := string(new)
+
+   return &output
 }
 
 func IntToString(n int) string {
