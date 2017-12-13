@@ -26,7 +26,7 @@ import (
     "testing"
 )
 
-func TestGetStdin(t *testing.T) {
+func testGetStdin(t *testing.T) {
     user_in := GetStdin()
     if user_in != nil {
         DebugOut("UserString: " + *user_in)
