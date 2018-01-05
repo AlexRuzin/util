@@ -132,7 +132,7 @@ func Serialize(d interface{}) ([]byte, error) {
     return b.Bytes(), nil
 }
 
-func DeSerialize(data []byte) (interface {}, error) {
+func DeSerialize(data []byte) (* interface {}, error) {
     var output interface{}
 
     b := bytes.Buffer{}
@@ -143,5 +143,5 @@ func DeSerialize(data []byte) (interface {}, error) {
         return nil, err
     }
 
-    return output, nil
+    return &output, nil
 }
