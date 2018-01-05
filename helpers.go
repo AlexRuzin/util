@@ -32,6 +32,7 @@ import (
     "encoding/base64"
     "unicode"
     "bufio"
+    "encoding/gob"
 )
 
 func GetStdin() *string {
@@ -120,4 +121,27 @@ func IsAsciiPrintable(s string) bool {
         }
     }
     return true
+}
+
+func Serialize(d interface{}) ([]byte, error) {
+    b := new(bytes.Buffer)
+    e := gob.NewEncoder(b)
+    if err := e.Encode(d); err != nil {
+        return nil, err
+    }
+    return b.Bytes(), nil
+}
+
+func DeSerialize(data []byte) (interface {}, error) {
+    var output interface{}
+
+    b := bytes.Buffer{}
+    b.Write(data)
+    d := gob.NewDecoder(&b)
+
+    if err := d.Decode(&output); err != nil {
+        return nil, err
+    }
+
+    return output, nil
 }
