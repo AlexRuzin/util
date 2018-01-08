@@ -35,7 +35,6 @@ import (
     "encoding/gob"
     "syscall"
     "unsafe"
-    "github.com/golang-collections/go-datastructures/threadsafe/err"
 )
 
 func GetStdin() *string {
