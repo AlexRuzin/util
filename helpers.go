@@ -35,6 +35,7 @@ import (
     "encoding/gob"
     "syscall"
     "unsafe"
+    "github.com/golang-collections/go-datastructures/threadsafe/err"
 )
 
 func GetStdin() *string {
@@ -156,11 +157,12 @@ var (
     kernel32        = syscall.NewLazyDLL("kernel32.dll")
     procCreateMutex = kernel32.NewProc("CreateMutexW")
 )
-func CreateMutex(name string) (uintptr, error) {
+func CreateMutexGlobal(name string) (uintptr, error) {
+    globalMutex := "Global\\\\" + name
     ret, _, err := procCreateMutex.Call(
         0,
         0,
-        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(name))),
+        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(globalMutex))),
     )
     switch int(err.(syscall.Errno)) {
     case 0:
