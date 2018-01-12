@@ -203,7 +203,7 @@ func GetSystemInfo() (sysinfo *SystemInfo, err error) {
     default:
     }
 
-    return nil, nil
+    return report, nil
 }
 
 func getInfoLinux() string {
