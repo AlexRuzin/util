@@ -23,10 +23,54 @@
 
 package util
 
-import "errors"
+import (
+    "errors"
+    "os"
+    "syscall"
+    "sync"
+)
+
+const ROOT_MUTEX_DIRECTORY = "/tmp/"
+
+/*
+ * A n-length map containing the mutex name, and the handle object as the value
+ */
+var (
+    syncMap = make(map[string]uintptr)
+    syncObj sync.Mutex
+)
 
 func CreateMutexGlobal(name string) (uintptr, error) {
-    /* TODO -- add logic for this method */
-    panic(errors.New("CreateMutexGlobal() not implemented"))
+    syncObj.Lock()
+    defer syncObj.Unlock()
+
+    mutexName := genMutexName(name)
+
+    var fd_lock = syscall.Open(mutexName, syscall.O_CREAT)
+    if fd_lock == -1 {
+        return 0, RetErrStr("Failed to obtain mutex lock: " + mutexName)
+    }
+
+    syscall.Flock(fd_lock, syscall.LOCK_EX)
+
+    syncMap[name] = fd_lock
+
     return 0, nil
+}
+
+func CloseGlobalMutex(name string) error {
+    syncObj.Lock()
+    defer syncObj.Unlock()
+
+    mutexName := genMutexName(name)
+    
+    syscall.Flock(fd_lock, syscall.LOCK_UN)
+    syscall.Close(syncMap[name])
+
+    delete(syncMap[name])
+}
+
+func genMutexName(name string) string {
+    hostname, _ := os.Hostname()
+    return ROOT_MUTEX_DIRECTORY + hostname + "_" + name + "_util.mutex"
 }
