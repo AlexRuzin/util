@@ -33,8 +33,6 @@ import (
     "unicode"
     "bufio"
     "encoding/gob"
-    "syscall"
-    "unsafe"
 )
 
 func GetStdin() *string {
@@ -146,29 +144,6 @@ func DeSerialize(data []byte) (* interface {}, error) {
     }
 
     return &output, nil
-}
-
-/*
- * Create mutex function for win32
- * https://stackoverflow.com/questions/23162986/restricting-to-single-instance-of-executable-with-golang
- */
-var (
-    kernel32        = syscall.NewLazyDLL("kernel32.dll")
-    procCreateMutex = kernel32.NewProc("CreateMutexW")
-)
-func CreateMutexGlobal(name string) (uintptr, error) {
-    globalMutex := "Global\\\\" + name
-    ret, _, err := procCreateMutex.Call(
-        0,
-        0,
-        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(globalMutex))),
-    )
-    switch int(err.(syscall.Errno)) {
-    case 0:
-        return ret, nil
-    default:
-        return ret, err
-    }
 }
 
 /*
