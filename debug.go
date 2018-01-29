@@ -47,19 +47,35 @@ func CheckN(err error, d string) {
     }
 }
 
+/*
+ * Throw a panic
+ */
 func ThrowN(d string) {
     panic(d)
 }
 
+/*
+ * Standard debug method
+ */
 func DebugOut(debug string) {
     fmt.Println(debug)
 }
 
+/*
+ * Prints hex output
+ */
 func DebugOutHex(debug []byte) {
     fmt.Printf("%v\r\n", debug)
 }
 
+/*
+ * Returns a new error object with the specified prefix
+ */
 func RetErrStr(text string) (err error) {
-    err = errors.New("error: " + text)
+    err = errors.New("RetErrStr(): " + text)
     return
 }
+
+/*
+ * Displays the method name of the caller method
+ */
