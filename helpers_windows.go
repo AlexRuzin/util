@@ -26,6 +26,8 @@ package util
 import (
     "syscall"
     "unsafe"
+    "sync"
+    "strconv"
 )
 
 /*
@@ -35,18 +37,56 @@ import (
 var (
     kernel32        = syscall.NewLazyDLL("kernel32.dll")
     procCreateMutex = kernel32.NewProc("CreateMutexW")
+    procCloseHandle = kernel32.NewProc("CloseHandle")
 )
+
+/*
+ * A n-length map containing the mutex name, and the handle object as the value
+ */
+var (
+    syncMap = make(map[string]uintptr)
+    syncObj sync.Mutex
+)
+
 func CreateMutexGlobal(name string) (uintptr, error) {
+    syncObj.Lock()
+    defer syncObj.Unlock()
+
     globalMutex := "Global\\\\" + name
-    ret, _, err := procCreateMutex.Call(
-        0,
-        0,
+    ret, _, err := procCreateMutex.Call(0, 0,
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(globalMutex))),
     )
     switch int(err.(syscall.Errno)) {
     case 0:
+        syncMap[name] = ret
         return ret, nil
     default:
         return ret, err
+    }
+}
+
+func CloseGlobalMutex(name string) error {
+    syncObj.Lock()
+    defer syncObj.Unlock()
+
+    var mutexHandle uintptr = syncMap[name]
+    if mutexHandle == 0 {
+        return RetErrStr("no such object (" + name + ") exists")
+    }
+
+    /* Clean handle from local namespace */
+    defer func () {
+        delete(syncMap, name)
+    } ()
+
+    ret, _, err := procCloseHandle.Call(0, 0,
+        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(name))),
+    )
+
+    switch int(err.(syscall.Errno)) {
+    case 0:
+        return nil
+    default:
+        return RetErrStr("CloseHandle() returned value: " + strconv.Itoa(int(ret)))
     }
 }
