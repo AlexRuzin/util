@@ -23,6 +23,10 @@
 
 package util
 
+import "errors"
+
 func CreateMutexGlobal(name string) (uintptr, error) {
+    /* TODO -- add logic for this method */
+    panic(errors.New("CreateMutexGlobal() not implemented"))
     return 0, nil
 }
