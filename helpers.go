@@ -25,14 +25,17 @@ package util
 import (
     "os"
     "strconv"
-    "math/rand"
     "time"
     "sync"
     "bytes"
-    "encoding/base64"
+    "runtime"
     "unicode"
     "bufio"
     "encoding/gob"
+    "encoding/base64"
+    "math/rand"
+
+    "github.com/alexflint/go-filemutex"
 )
 
 func GetStdin() *string {
@@ -153,4 +156,48 @@ func DeSerialize(data []byte) (* interface {}, error) {
 func CreateSqlDatetime() string {
     const createFormat = "2006-01-02 15:04:05"
     return time.Unix(1391878657, 0).Format(createFormat)
+}
+
+/*
+ * This method creates a global object which attempts to synchronize instances of
+ *  applications that run concurrently. This application WILL terminate the application
+ *  if a lock cannot be acquired, otherwise it will return the appropriate *Filemutex
+ *  object and a nil error code
+ */
+func SynchronizeGlobalMutex(mutexName string) (*filemutex.FileMutex, error) {
+    switch runtime.GOOS {
+    case "windows":
+        mutexName = os.TempDir() + "\\" + mutexName
+        break
+    case "freebsd":
+    case "bsd":
+    case "linux":
+        mutexName = "/tmp/" + mutexName
+        break
+    default:
+        return nil, RetErrStr("Current OS not supported for ObtainSystemMutex()")
+    }
+
+    var lockChan = make(chan *filemutex.FileMutex)
+    go func (instanceLock chan *filemutex.FileMutex) {
+        var timeout time.Duration = 1 * time.Second
+        select {
+        case <- instanceLock:
+            return
+        case <- time.After(timeout):
+            /* Cannot acquire lock -- already exists */
+            os.Exit(0)
+        }
+
+    } (lockChan)
+
+    mutexLock, err := filemutex.New(mutexName)
+    if err != nil {
+        return nil, err
+    }
+
+    mutexLock.Lock()
+    lockChan <- mutexLock
+
+    return mutexLock, nil /* Lock aquired */
 }
