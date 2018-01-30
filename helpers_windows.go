@@ -31,6 +31,10 @@ import (
 )
 
 /*
+ * These methods are not stable as of yet. Do not use until completed
+ */
+
+/*
  * Create mutex function for win32
  * https://stackoverflow.com/questions/23162986/restricting-to-single-instance-of-executable-with-golang
  */

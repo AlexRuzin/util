@@ -40,6 +40,9 @@ var (
     syncObj sync.Mutex
 )
 
+/*
+ * These methods are not stable as of yet. Do not use until completed
+ */
 func CreateMutexGlobal(name string) (uintptr, error) {
     syncObj.Lock()
     defer syncObj.Unlock()
