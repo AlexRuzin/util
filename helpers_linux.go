@@ -1,4 +1,4 @@
-// +build linux
+// +build linux, +build ignore
 /*
  * Copyright (c) 2017 AlexRuzin (stan.ruzin@gmail.com)
  *
