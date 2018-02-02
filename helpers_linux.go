@@ -1,4 +1,4 @@
-// +build ignore
+// +build linux
 /*
  * Copyright (c) 2017 AlexRuzin (stan.ruzin@gmail.com)
  *
@@ -40,9 +40,7 @@ var (
     syncObj sync.Mutex
 )
 
-/*
- * These methods are not stable as of yet. Do not use until completed
- */
+/* -- These below methods are obsolete. Please see util.SynchronizeGlobalMutex()
 func CreateMutexGlobal(name string) (uintptr, error) {
     syncObj.Lock()
     defer syncObj.Unlock()
@@ -72,6 +70,8 @@ func CloseGlobalMutex(name string) error {
 
     delete(syncMap[name])
 }
+
+*/
 
 func genMutexName(name string) string {
     hostname, _ := os.Hostname()
