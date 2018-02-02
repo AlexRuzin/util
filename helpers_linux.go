@@ -24,9 +24,7 @@
 package util
 
 import (
-    "errors"
     "os"
-    "syscall"
     "sync"
 )
 
