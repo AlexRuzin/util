@@ -201,3 +201,12 @@ func SynchronizeGlobalMutex(mutexName string) (*filemutex.FileMutex, error) {
 
     return mutexLock, nil /* Lock aquired */
 }
+
+func SimpleDateTime() string {
+    var output = ""
+
+    t := time.Now()
+    output = t.Format("2006-01-02 15:04:05")
+
+    return output
+}
