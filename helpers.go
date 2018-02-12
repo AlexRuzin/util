@@ -36,6 +36,7 @@ import (
     "math/rand"
 
     "github.com/alexflint/go-filemutex"
+    "io"
 )
 
 func GetStdin() *string {
@@ -209,4 +210,37 @@ func SimpleDateTime() string {
     output = t.Format("2006-01-02 15:04:05")
 
     return output
+}
+
+func CopyFile(source string, destination string) error {
+    /* Delete destination */
+    if _, err := os.Stat(destination); !os.IsNotExist(err) {
+        if err := os.Remove(destination); err != nil {
+            return err
+        }
+    }
+
+    in, err := os.Open(source)
+    if err != nil {
+        return err
+    }
+    defer in.Close()
+
+    out, err := os.Create(destination)
+    if err != nil {
+        return err
+    }
+
+    defer func() {
+        cerr := out.Close()
+        if err == nil {
+            err = cerr
+        }
+    }()
+
+    if _, err = io.Copy(out, in); err != nil {
+        return err
+    }
+
+    return out.Sync()
 }
