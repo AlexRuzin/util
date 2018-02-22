@@ -37,6 +37,7 @@ import (
 
     "github.com/alexflint/go-filemutex"
     "io"
+    "compress/gzip"
 )
 
 func GetStdin() *string {
@@ -243,4 +244,26 @@ func CopyFile(source string, destination string) error {
     }
 
     return out.Sync()
+}
+
+/* Use gzip compression to generate a compressed stream */
+func CompressStream(p []byte) ([]byte, error) {
+    var compressedBuffer = bytes.NewBuffer(nil)
+    gzipWriter := gzip.NewWriter(compressedBuffer)
+    gzipWriter.Write(p)
+
+    zipped := bytes.Buffer{}
+    zipped.ReadFrom(compressedBuffer)
+
+    rawBytes := make([]byte, zipped.Len())
+    read, err := zipped.Read(rawBytes)
+    if err != nil {
+        return nil, err
+    }
+
+    if read == 0 {
+        return nil, RetErrStr("Error in the compression of input stream")
+    }
+
+    return rawBytes, nil
 }
