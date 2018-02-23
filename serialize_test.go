@@ -21,3 +21,41 @@
  */
 
 package util
+
+import (
+    "testing"
+    "bytes"
+    "errors"
+)
+
+func TestSerialization(t *testing.T) {
+    type testStruct struct {
+        Rand1           int
+        Rand2           string
+        Rand3           bytes.Buffer
+        Rand4           []byte
+    }
+
+    ts := testStruct{
+        Rand1:          RandInt(1, 256),
+        Rand2:          RandomString(RandInt(64,256)),
+        Rand3:          bytes.Buffer{},
+        Rand4:          []byte { 1, 2, 4, 4},
+    }
+
+    serialized, err := Serialize(ts)
+    if err != nil {
+        panic(err)
+    }
+
+    var deserializedStruct = new (testStruct)
+    if err := DeSerialize(serialized, deserializedStruct); err != nil {
+        panic(err)
+    }
+
+    if bytes.Compare([]byte(ts.Rand2), []byte(deserializedStruct.Rand2)) != 0 {
+        panic(errors.New("checksum failure in deserialized object"))
+    }
+
+    return
+}
