@@ -22,4 +22,34 @@
 
 package util
 
+import (
+    "testing"
 
+    "crypto/md5"
+    "bytes"
+    "errors"
+)
+
+func TestCompression(t *testing.T) {
+
+    /* Generate a random length raw stream, take a md5sum */
+    decompressedString := RandomString(RandInt(128, 4096))
+    rawSum := md5.Sum([]byte(decompressedString))
+    compressedStream, err := CompressStream([]byte(decompressedString))
+    if err != nil {
+        panic(err)
+    }
+
+    /* Decompress and check sum */
+    newDecompressed, err := DecompressStream(compressedStream)
+    if err != nil {
+        panic(err)
+    }
+    newSum := md5.Sum(newDecompressed)
+
+    if bytes.Compare(newSum[:], rawSum[:]) != 0 {
+        panic(errors.New("Checksum failure in gzip decompression"))
+    }
+
+    return
+}
