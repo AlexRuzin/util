@@ -36,16 +36,14 @@ func Serialize(d interface{}) ([]byte, error) {
     return b.Bytes(), nil
 }
 
-func DeSerialize(data []byte) (* interface {}, error) {
-    var output interface{}
-
+func DeSerialize(data []byte, s interface {}) error {
     b := bytes.Buffer{}
     b.Write(data)
     d := gob.NewDecoder(&b)
 
-    if err := d.Decode(&output); err != nil {
-        return nil, err
+    if err := d.Decode(s); err != nil {
+        return err
     }
 
-    return &output, nil
+    return nil
 }
