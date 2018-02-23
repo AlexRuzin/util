@@ -22,4 +22,53 @@
 
 package util
 
+import (
+    "bytes"
+    "compress/gzip"
+    "io"
+)
 
+/* Decompression subroutine */
+func DecompressStream(p []byte) ([]byte, error) {
+    zippedRaw := bytes.NewReader(p)
+    zipped, _ := gzip.NewReader(zippedRaw)
+    defer zipped.Close()
+
+    var decompressed []byte
+    for {
+        tmp := make([]byte, 100)
+        read, err := zipped.Read(tmp)
+        if err != io.EOF {
+            return nil, err
+        }
+        if err == io.EOF {
+
+        }
+
+        decompressed = append(decompressed, tmp)
+    }
+
+    return nil, nil
+}
+
+/* Use gzip compression to generate a compressed stream */
+func CompressStream(p []byte) ([]byte, error) {
+    var compressedBuffer = bytes.NewBuffer(nil)
+    gzipWriter := gzip.NewWriter(compressedBuffer)
+    gzipWriter.Write(p)
+
+    zipped := bytes.Buffer{}
+    zipped.ReadFrom(compressedBuffer)
+
+    rawBytes := make([]byte, zipped.Len())
+    read, err := zipped.Read(rawBytes)
+    if err != nil {
+        return nil, err
+    }
+
+    if read == 0 {
+        return nil, RetErrStr("Error in the compression of input stream")
+    }
+
+    return rawBytes, nil
+}
