@@ -24,51 +24,36 @@ package util
 
 import (
     "bytes"
-    "compress/gzip"
-    "io"
+    "io/ioutil"
+    "compress/zlib"
 )
 
-/* Decompression subroutine */
-func DecompressStream(p []byte) ([]byte, error) {
-    zippedRaw := bytes.NewReader(p)
-    zipped, _ := gzip.NewReader(zippedRaw)
-    defer zipped.Close()
+/* Use gzip compression to generate a compressed stream */
+func CompressStream(p []byte) ([]byte, error) {
+    var in bytes.Buffer
 
-    var decompressed []byte
-    for {
-        tmp := make([]byte, 100)
-        read, err := zipped.Read(tmp)
-        if err != io.EOF {
-            return nil, err
-        }
-        if err == io.EOF {
-
-        }
-
-        decompressed = append(decompressed, tmp)
-    }
+    zlib := zlib.NewWriter(&in)
+    zlib.Write(p[:])
+    defer zlib.Close()
 
     return nil, nil
 }
 
-/* Use gzip compression to generate a compressed stream */
-func CompressStream(p []byte) ([]byte, error) {
-    var compressedBuffer = bytes.NewBuffer(nil)
-    gzipWriter := gzip.NewWriter(compressedBuffer)
-    gzipWriter.Write(p)
-
-    zipped := bytes.Buffer{}
-    zipped.ReadFrom(compressedBuffer)
-
-    rawBytes := make([]byte, zipped.Len())
-    read, err := zipped.Read(rawBytes)
+/* Decompression subroutine */
+func DecompressStream(p []byte) ([]byte, error) {
+    b := bytes.NewReader(p[:])
+    zlib, err := zlib.NewReader(b)
     if err != nil {
         return nil, err
     }
 
-    if read == 0 {
-        return nil, RetErrStr("Error in the compression of input stream")
+    defer zlib.Close()
+
+    decompressed, err := ioutil.ReadAll(zlib)
+    if err != nil {
+        return nil, err
     }
 
-    return rawBytes, nil
+    return decompressed, nil
+
 }
