@@ -33,7 +33,8 @@ import (
 func TestCompression(t *testing.T) {
 
     /* Generate a random length raw stream, take a md5sum */
-    decompressedString := RandomString(RandInt(128, 4096))
+    decompressedString := RandomString(RandInt(16, 64))
+    decompressedString = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
     rawSum := md5.Sum([]byte(decompressedString))
     compressedStream, err := CompressStream([]byte(decompressedString))
     if err != nil {

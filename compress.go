@@ -25,31 +25,38 @@ package util
 import (
     "bytes"
     "io/ioutil"
-    "compress/zlib"
+
+    /* Preference for the gunzip compressor, although using zlib follows the same I/O API */
+    "compress/gzip"
+    _"compress/zlib"
 )
 
 /* Use gzip compression to generate a compressed stream */
 func CompressStream(p []byte) ([]byte, error) {
     var in bytes.Buffer
 
-    zlib := zlib.NewWriter(&in)
-    zlib.Write(p[:])
-    defer zlib.Close()
+    gzip := gzip.NewWriter(&in)
+    defer gzip.Close()
 
-    return nil, nil
+    if _, err := gzip.Write(p); err != nil {
+        return nil, err
+    }
+
+    return in.Bytes(), nil
 }
 
 /* Decompression subroutine */
 func DecompressStream(p []byte) ([]byte, error) {
-    b := bytes.NewReader(p[:])
-    zlib, err := zlib.NewReader(b)
+    in := bytes.NewReader(p)
+
+    gzip, err := gzip.NewReader(in)
     if err != nil {
         return nil, err
     }
 
-    defer zlib.Close()
+    defer gzip.Close()
 
-    decompressed, err := ioutil.ReadAll(zlib)
+    decompressed, err := ioutil.ReadAll(gzip)
     if err != nil {
         return nil, err
     }
