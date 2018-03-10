@@ -35,10 +35,10 @@ import (
 func CompressStream(p []byte) ([]byte, error) {
     var in bytes.Buffer
 
-    gzip := gzip.NewWriter(&in)
-    defer gzip.Close()
+    gz := gzip.NewWriter(&in)
+    defer gz.Close()
 
-    if _, err := gzip.Write(p); err != nil {
+    if _, err := gz.Write(p); err != nil {
         return nil, err
     }
 
@@ -49,14 +49,14 @@ func CompressStream(p []byte) ([]byte, error) {
 func DecompressStream(p []byte) ([]byte, error) {
     in := bytes.NewReader(p)
 
-    gzip, err := gzip.NewReader(in)
+    gz, err := gzip.NewReader(in)
     if err != nil {
         return nil, err
     }
 
-    defer gzip.Close()
+    defer gz.Close()
 
-    decompressed, err := ioutil.ReadAll(gzip)
+    decompressed, err := ioutil.ReadAll(gz)
     if err != nil {
         return nil, err
     }
