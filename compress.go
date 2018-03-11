@@ -25,6 +25,7 @@ package util
 import (
     "bytes"
     "io/ioutil"
+    "errors"
 
     /* Preference for the gunzip compressor, although using zlib follows the same I/O API */
     "compress/gzip"
@@ -42,6 +43,8 @@ func CompressStream(p []byte) ([]byte, error) {
         return nil, err
     }
 
+    gz.Flush()
+
     return in.Bytes(), nil
 }
 
@@ -56,9 +59,9 @@ func DecompressStream(p []byte) ([]byte, error) {
 
     defer gz.Close()
 
-    decompressed, err := ioutil.ReadAll(gz)
-    if err != nil {
-        return nil, err
+    decompressed, _ := ioutil.ReadAll(gz)
+    if len(decompressed) == 0 {
+        return nil, errors.New("decompressed stream is 0 bytes")
     }
 
     return decompressed, nil
