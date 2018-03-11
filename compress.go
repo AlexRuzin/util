@@ -65,5 +65,18 @@ func DecompressStream(p []byte) ([]byte, error) {
     }
 
     return decompressed, nil
+}
 
+func GetCompressedSize(p []byte) int {
+    var (
+        err         error = nil
+        compressed  []byte
+    )
+
+    compressed, err = CompressStream(p)
+    if err != nil {
+        panic(err)
+    }
+
+    return len(compressed)
 }
