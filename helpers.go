@@ -63,6 +63,10 @@ func IntToString(n int) string {
 }
 
 func RandIntRange(min, max int) int {
+    if min > max {
+        panic(RetErrStr("RandIntRange() reports that min > max, panic invoked"))
+    }
+
     rand.Seed(time.Now().Unix())
     return rand.Intn(max - min) + min
 }
