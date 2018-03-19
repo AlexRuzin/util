@@ -24,7 +24,7 @@ package util
 
 import "testing"
 
-func testQueues(t *testing.T) {
+func TestQueues(t *testing.T) {
     var newQueue = BuildQueue(1, 2, 3, 4)
 
     if newQueue.Pop() != 1 {
@@ -32,7 +32,7 @@ func testQueues(t *testing.T) {
     }
 
     newQueue.Push(5)
-    if newQueue.Index(4) != 5 {
+    if newQueue.Index(3) != 5 {
         panic(RetErrStr("Failed test 2"))
     }
 
