@@ -23,12 +23,27 @@
 package util
 
 import (
-
+    "sync"
 )
 
 type QueueObject struct {
     count               uint64
     elements            []interface{}
+    syncObj             sync.Mutex
+}
+
+/*
+ * Return a read-only array of the queue
+ */
+func (f *QueueObject) Array() []interface{} {
+    return f.elements
+}
+
+/*
+ * Get the length of the elements
+ */
+func (f *QueueObject) Len() int {
+    return int(f.count)
 }
 
 /*
@@ -36,14 +51,26 @@ type QueueObject struct {
  * Output: Number of objects in the array
  */
 func (f *QueueObject) Push(p interface{}) int {
+    f.syncObj.Lock()
+    defer f.syncObj.Unlock()
 
+    f.elements = append(f.elements, p)
+    f.count += 1
+
+    if int(f.count) != len(f.elements) {
+        panic(RetErrStr("Queue.Push(): Critical indexing error"))
+    }
 
     return len(f.elements)
 }
 
 func (f *QueueObject) Pop() interface{} {
+    f.syncObj.Lock()
+    defer f.syncObj.Unlock()
+
     var topObject = f.elements[0]
     f.elements = f.elements[1:]
+    f.count -= 1
 
     return topObject
 }
@@ -58,13 +85,16 @@ func BuildQueue(load ...interface{}) (Queue *QueueObject) {
     return output
 }
 
-func DestroyQueue(Queue *QueueObject) {
-    for k, _ := range Queue.elements {
-        Queue.elements[k] = nil
+func (f *QueueObject) Close() {
+    f.syncObj.Lock()
+    defer f.syncObj.Unlock()
+
+    for k, _ := range f.elements {
+        f.elements[k] = nil
     }
 
-    Queue.count = 0
-    Queue.elements = nil
+    f.count = 0
+    f.elements = nil
 
     return
 }
