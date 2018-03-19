@@ -23,35 +23,48 @@
 package util
 
 import (
-    "sync"
+
 )
 
-type Queue struct {
-    list []interface{}
-    sync sync.Mutex
+type QueueObject struct {
+    count               uint64
+    elements            []interface{}
 }
 
-func NewQueue() *Queue {
-    q := &Queue{}
-    return q
+/*
+ * Input: Object that needs to be pushed to the Queue
+ * Output: Number of objects in the array
+ */
+func (f *QueueObject) Push(p interface{}) int {
+
+
+    return len(f.elements)
 }
 
-func (f *Queue) Len() int {
-    f.sync.Lock()
-    defer f.sync.Unlock()
+func (f *QueueObject) Pop() interface{} {
+    var topObject = f.elements[0]
+    f.elements = f.elements[1:]
 
-    return len(f.list)
+    return topObject
 }
 
-func (f *Queue) Push(item interface{}) {
-    f.sync.Lock()
-    defer f.sync.Unlock()
+func BuildQueue(load ...interface{}) (Queue *QueueObject) {
+    var output = &QueueObject{}
 
-    if len(f.list) == 0 {
-        f.list = make([]interface{}, 1)
-        f.list[0] = item
-        return
+    for _, v := range load {
+        output.Push(v)
     }
 
-    f.list[f.Len() + 1] = item
+    return output
+}
+
+func DestroyQueue(Queue *QueueObject) {
+    for k, _ := range Queue.elements {
+        Queue.elements[k] = nil
+    }
+
+    Queue.count = 0
+    Queue.elements = nil
+
+    return
 }
