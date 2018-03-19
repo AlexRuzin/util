@@ -33,6 +33,13 @@ type QueueObject struct {
 }
 
 /*
+ * References a certain element in the array
+ */
+func (f *QueueObject) Index(c int) interface{} {
+    return f.elements[c]
+}
+
+/*
  * Return a read-only array of the queue
  */
 func (f *QueueObject) Array() []interface{} {
