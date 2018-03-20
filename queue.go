@@ -85,7 +85,7 @@ func (f *QueueObject) Pop() interface{} {
     return topObject
 }
 
-func BuildQueue(load ...interface{}) (Queue *QueueObject) {
+func NewQueue(load ...interface{}) (Queue *QueueObject) {
     var output = &QueueObject{}
 
     for _, v := range load {
