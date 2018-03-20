@@ -50,6 +50,9 @@ func (f *QueueObject) Array() []interface{} {
  * Get the length of the elements
  */
 func (f *QueueObject) Len() int {
+    f.syncObj.Lock()
+    defer f.syncObj.Unlock()
+
     return int(f.count)
 }
 
