@@ -35,12 +35,12 @@ type QueueObject struct {
 /*
  * References a certain element in the array
  */
-func (f *QueueObject) Index(c int) *interface{} {
+func (f *QueueObject) Index(c int) interface{} {
     if uint64(c) >= f.count {
         panic(RetErrStr("Queue: Invalid index"))
     }
 
-    return &f.elements[c]
+    return f.elements[c]
 }
 
 /*
@@ -78,11 +78,11 @@ func (f *QueueObject) Push(p interface{}) int {
     return len(f.elements)
 }
 
-func (f *QueueObject) Pop() *interface{} {
+func (f *QueueObject) Pop() interface{} {
     f.syncObj.Lock()
     defer f.syncObj.Unlock()
 
-    ref := &f.elements[0]
+    ref := f.elements[0]
     f.elements = f.elements[1:]
 
     f.count -= 1
