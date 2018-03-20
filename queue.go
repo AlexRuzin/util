@@ -78,15 +78,15 @@ func (f *QueueObject) Push(p interface{}) int {
     return len(f.elements)
 }
 
-func (f *QueueObject) Pop() interface{} {
+func (f *QueueObject) Pop() *interface{} {
     f.syncObj.Lock()
     defer f.syncObj.Unlock()
 
-    var topObject = f.elements[0]
+    ref := &f.elements[0]
     f.elements = f.elements[1:]
-    f.count -= 1
 
-    return topObject
+    f.count -= 1
+    return ref
 }
 
 func NewQueue(load ...interface{}) (Queue *QueueObject) {
