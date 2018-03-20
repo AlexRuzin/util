@@ -35,12 +35,12 @@ type QueueObject struct {
 /*
  * References a certain element in the array
  */
-func (f *QueueObject) Index(c int) interface{} {
-    if c >= f.count {
+func (f *QueueObject) Index(c int) *interface{} {
+    if uint64(c) >= f.count {
         panic(RetErrStr("Queue: Invalid index"))
     }
 
-    return f.elements[c]
+    return &f.elements[c]
 }
 
 /*
