@@ -36,6 +36,10 @@ type QueueObject struct {
  * References a certain element in the array
  */
 func (f *QueueObject) Index(c int) interface{} {
+    if c >= f.count {
+        panic(RetErrStr("Queue: Invalid index"))
+    }
+
     return f.elements[c]
 }
 
@@ -95,7 +99,7 @@ func NewQueue(load ...interface{}) (Queue *QueueObject) {
     return output
 }
 
-func (f *QueueObject) Close() {
+func (f *QueueObject) CloseQueue() {
     f.syncObj.Lock()
     defer f.syncObj.Unlock()
 

@@ -38,5 +38,7 @@ func TestQueues(t *testing.T) {
         panic(RetErrStr("Failed test 2"))
     }
 
+    newQueue.CloseQueue()
+
     return
 }
