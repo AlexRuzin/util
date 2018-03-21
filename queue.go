@@ -83,6 +83,7 @@ func (f *QueueObject) Pop() interface{} {
     defer f.syncObj.Unlock()
 
     ref := f.elements[0]
+    f.elements[0] = nil
     f.elements = f.elements[1:]
 
     f.count -= 1
