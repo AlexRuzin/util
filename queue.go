@@ -78,11 +78,11 @@ func (f *QueueObject) Push(p interface{}) int {
     return len(f.elements)
 }
 
-func (f *QueueObject) Pop() interface{} {
+func (f *QueueObject) Pop() *interface{} {
     f.syncObj.Lock()
     defer f.syncObj.Unlock()
 
-    ref := f.elements[0]
+    ref := &f.elements[0]
     f.elements[0] = nil
     f.elements = f.elements[1:]
 

@@ -29,7 +29,7 @@ func TestQueues(t *testing.T) {
     var newQueue2 = NewQueue()
     newQueue2.Push(1)
 
-    if newQueue.Pop() != 1 {
+    if *newQueue.Pop() != 1 {
         panic(RetErrStr("Failed test 1"))
     }
 
