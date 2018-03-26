@@ -36,6 +36,7 @@ import (
 
     "github.com/alexflint/go-filemutex"
     "io"
+    "encoding/base32"
 )
 
 func GetStdin() *string {
@@ -223,4 +224,18 @@ func CopyFile(source string, destination string) error {
     }
 
     return out.Sync()
+}
+
+func Base32Decoder(text string) (string, error) {
+    var (
+        data            = []byte(text)
+        decodeErr       error
+        decoded         = base32.StdEncoding.EncodeToString(data)
+    )
+
+    if decodeErr != nil {
+        return "", decodeErr
+    }
+
+    return decoded, nil
 }
