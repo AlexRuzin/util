@@ -78,7 +78,7 @@ func (f *QueueObject) Push(p interface{}) int {
     return len(f.elements)
 }
 
-func (f *QueueObject) Pop() *interface{} {
+func (f *QueueObject) Pop() (interface{}) {
     f.syncObj.Lock()
     defer f.syncObj.Unlock()
 
