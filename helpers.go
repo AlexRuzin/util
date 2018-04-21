@@ -136,8 +136,8 @@ func IsAsciiPrintable(s string) bool {
  * https://stackoverflow.com/questions/21648842/output-go-time-in-rfc3339-like-mysql-format
  */
 func CreateSqlDatetime() string {
-    const createFormat = "2006-01-02 15:04:05"
-    return time.Unix(1391878657, 0).Format(createFormat)
+    t := time.Now()
+    return t.Format("2006-01-02 15:04:05")
 }
 
 /*
