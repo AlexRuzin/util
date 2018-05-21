@@ -186,6 +186,15 @@ func GetSystemInfo() (sysinfo *SystemInfo, err error) {
             gio.Hostname,_ = os.Hostname()
             return gio
         } ()
+
+        report.OSName = func () string {
+            cmd, err := exec.Command("uname", "-r").Output()
+            if err != nil {
+                panic(err)
+            }
+
+            return "Linux Kernel " + string(cmd)
+        } ()
     case "freebsd":
         report.GoInfo = func () *goInfo.GoInfoObject {
             out := getInfoFreeBSD()
