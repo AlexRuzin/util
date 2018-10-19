@@ -20,6 +20,8 @@
  * SOFTWARE.
  */
 
+/* test */
+
 package util
 
 import (
